@@ -56,13 +56,9 @@ public class RocksDBOptionsFileTest {
   private void checkOptions(final String dbPath) throws Exception {
     final List<ColumnFamilyDescriptor> cfDescriptors = new ArrayList<>();
     final DBOptions dbOptions = new DBOptions();
-    final ConfigOptions cfopts = new ConfigOptions();
-    cfopts.setIgnoreUnknownOptions(false);
-    cfopts.setInputStringsEscaped(true);
-    cfopts.setEnv(Env.getDefault());
 
     RocksDB.loadLibrary();
-    OptionsUtil.loadLatestOptions(cfopts, dbPath, dbOptions, cfDescriptors);
+    OptionsUtil.loadLatestOptions(dbPath, Env.getDefault(), dbOptions, cfDescriptors);
 
     try {
       assertEquals(dbOptions.walSizeLimitMB(), 42);

@@ -98,17 +98,11 @@ public class RocksDBClient extends DB {
     }
 
     final DBOptions options = new DBOptions();
-    final ConfigOptions cfopts = new ConfigOptions();
-    cfopts.setIgnoreUnknownOptions(false);
-    cfopts.setInputStringsEscaped(true);
-    Env env = Env.getDefault().setBackgroundThreads(Runtime.getRuntime().availableProcessors() * 2 - 1);
-    cfopts.setEnv(env);
-    options.setEnv(env);
     final List<ColumnFamilyDescriptor> cfDescriptors = new ArrayList<>();
     final List<ColumnFamilyHandle> cfHandles = new ArrayList<>();
 
     RocksDB.loadLibrary();
-    OptionsUtil.loadOptionsFromFile(cfopts, optionsFile.toAbsolutePath().toString(), options, cfDescriptors);
+    OptionsUtil.loadOptionsFromFile(optionsFile.toAbsolutePath().toString(), Env.getDefault(), options, cfDescriptors);
     dbOptions = options;
 
     final RocksDB db = RocksDB.open(options, rocksDbDir.toAbsolutePath().toString(), cfDescriptors, cfHandles);
@@ -159,9 +153,8 @@ public class RocksDBClient extends DB {
           .setCreateIfMissing(true)
           .setCreateMissingColumnFamilies(true)
           .setIncreaseParallelism(rocksThreads)
-          .setMaxBackgroundJobs(rocksThreads)
-          .setInfoLogLevel(InfoLogLevel.INFO_LEVEL)
-          .setEnv(Env.getDefault().setBackgroundThreads(rocksThreads - 1));
+          .setMaxBackgroundCompactions(rocksThreads)
+          .setInfoLogLevel(InfoLogLevel.INFO_LEVEL);
       dbOptions = options;
       return RocksDB.open(options, rocksDbDir.toAbsolutePath().toString());
     } else {
@@ -169,9 +162,8 @@ public class RocksDBClient extends DB {
           .setCreateIfMissing(true)
           .setCreateMissingColumnFamilies(true)
           .setIncreaseParallelism(rocksThreads)
-          .setMaxBackgroundJobs(rocksThreads)
-          .setInfoLogLevel(InfoLogLevel.INFO_LEVEL)
-          .setEnv(Env.getDefault().setBackgroundThreads(rocksThreads - 1));
+          .setMaxBackgroundCompactions(rocksThreads)
+          .setInfoLogLevel(InfoLogLevel.INFO_LEVEL);
       dbOptions = options;
 
       final List<ColumnFamilyHandle> cfHandles = new ArrayList<>();
