@@ -101,9 +101,10 @@ public class RocksDBClient extends DB {
     final ConfigOptions cfopts = new ConfigOptions();
     cfopts.setIgnoreUnknownOptions(false);
     cfopts.setInputStringsEscaped(true);
-    cfopts.setEnv(Env.getDefault());
+    cfopts.setEnv(Env.getDefault().setBackgroundThreads(Runtime.getRuntime().availableProcessors() * 2 - 1));
     final List<ColumnFamilyDescriptor> cfDescriptors = new ArrayList<>();
     final List<ColumnFamilyHandle> cfHandles = new ArrayList<>();
+    options.setEnv(cfopts.getEnv());
 
     RocksDB.loadLibrary();
     OptionsUtil.loadOptionsFromFile(cfopts, optionsFile.toAbsolutePath().toString(), options, cfDescriptors);
@@ -158,7 +159,8 @@ public class RocksDBClient extends DB {
           .setCreateMissingColumnFamilies(true)
           .setIncreaseParallelism(rocksThreads)
           .setMaxBackgroundJobs(rocksThreads)
-          .setInfoLogLevel(InfoLogLevel.INFO_LEVEL);
+          .setInfoLogLevel(InfoLogLevel.INFO_LEVEL)
+          .setEnv(Env.getDefault().setBackgroundThreads(rocksThreads - 1));
       dbOptions = options;
       return RocksDB.open(options, rocksDbDir.toAbsolutePath().toString());
     } else {
@@ -167,7 +169,8 @@ public class RocksDBClient extends DB {
           .setCreateMissingColumnFamilies(true)
           .setIncreaseParallelism(rocksThreads)
           .setMaxBackgroundJobs(rocksThreads)
-          .setInfoLogLevel(InfoLogLevel.INFO_LEVEL);
+          .setInfoLogLevel(InfoLogLevel.INFO_LEVEL)
+          .setEnv(Env.getDefault().setBackgroundThreads(rocksThreads - 1));
       dbOptions = options;
 
       final List<ColumnFamilyHandle> cfHandles = new ArrayList<>();
