@@ -101,7 +101,7 @@ public class RocksDBClient extends DB {
     final ConfigOptions cfopts = new ConfigOptions();
     cfopts.setIgnoreUnknownOptions(false);
     cfopts.setInputStringsEscaped(true);
-    Env env = Env.getDefault().setBackgroundThreads(Runtime.getRuntime().availableProcessors() * 2 - 1)
+    Env env = Env.getDefault().setBackgroundThreads(Runtime.getRuntime().availableProcessors() * 2 - 1);
     cfopts.setEnv(env);
     options.setEnv(env);
     final List<ColumnFamilyDescriptor> cfDescriptors = new ArrayList<>();
