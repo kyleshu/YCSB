@@ -101,10 +101,11 @@ public class RocksDBClient extends DB {
     final ConfigOptions cfopts = new ConfigOptions();
     cfopts.setIgnoreUnknownOptions(false);
     cfopts.setInputStringsEscaped(true);
-    cfopts.setEnv(Env.getDefault().setBackgroundThreads(Runtime.getRuntime().availableProcessors() * 2 - 1));
+    Env env = Env.getDefault().setBackgroundThreads(Runtime.getRuntime().availableProcessors() * 2 - 1)
+    cfopts.setEnv(env);
+    options.setEnv(env);
     final List<ColumnFamilyDescriptor> cfDescriptors = new ArrayList<>();
     final List<ColumnFamilyHandle> cfHandles = new ArrayList<>();
-    options.setEnv(cfopts.getEnv());
 
     RocksDB.loadLibrary();
     OptionsUtil.loadOptionsFromFile(cfopts, optionsFile.toAbsolutePath().toString(), options, cfDescriptors);
